@@ -3,50 +3,50 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
-
-class SettingScreen extends StatefulWidget {
+class DoctorSettingsScreen extends StatefulWidget {
   @override
-  _SettingScreenState createState() => _SettingScreenState();
+  _DoctorSettingsScreenState createState() => _DoctorSettingsScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen> {
-  late String _userName = 'Loading...'; // Default value
-  
+class _DoctorSettingsScreenState extends State<DoctorSettingsScreen> {
+  late String _doctorName = 'Loading...'; // Default value
+
   @override
   void initState() {
     super.initState();
-    _fetchUserName();
+    _fetchDoctorName();
   }
 
-  Future<void> _fetchUserName() async {
+  Future<void> _fetchDoctorName() async {
     try {
       User? user = FirebaseAuth.instance.currentUser; // Get current user
 
       if (user != null) {
-        // Fetch username from Firestore using email
-        QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-            .collection('Patients')
-            .where('email', isEqualTo: user.email) // Match user's email
-            .get();
+        // Fetch doctor's username from Firestore using email
+        QuerySnapshot<Map<String, dynamic>> querySnapshot =
+            await FirebaseFirestore.instance
+                .collection('Doctors')
+                .where('email', isEqualTo: user.email) // Match doctor's email
+                .get();
 
         if (querySnapshot.docs.isNotEmpty) {
-          // Update _userName with fetched username
+          // Update _doctorName with fetched username
           setState(() {
-            _userName = querySnapshot.docs.first['username'];
+            _doctorName = querySnapshot.docs.first['username'];
           });
         } else {
           setState(() {
-            _userName = 'User Not Found';
+            _doctorName = 'User Not Found';
           });
-          print('User not found in Firestore');
+          print('Doctor not found in Firestore');
         }
       } else {
         print('No user logged in');
       }
     } catch (e) {
-      print('Error fetching username: $e');
+      print('Error fetching doctor name: $e');
       setState(() {
-        _userName = 'Error';
+        _doctorName = 'Error';
       });
     }
   }
@@ -81,10 +81,10 @@ class _SettingScreenState extends State<SettingScreen> {
             ListTile(
               leading: CircleAvatar(
                 radius: 30,
-                backgroundImage: AssetImage("images/user.jpg"),
+                backgroundImage: AssetImage("images/doctor.jpg"), // Change to doctor's profile image
               ),
               title: Text(
-                _userName, // Display fetched username here
+                _doctorName, // Display fetched doctor's username here
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 25,
@@ -214,7 +214,9 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             Divider(height: 40),
             ListTile(
-              onTap: () {_signOut(context);},
+              onTap: () {
+                _signOut(context);
+              },
               leading: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(

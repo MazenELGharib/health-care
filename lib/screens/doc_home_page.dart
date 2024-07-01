@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:healthcare/screens/appointment_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; 
 import 'package:healthcare/screens/sensor_screen.dart';
 
 class DocScreen extends StatefulWidget {
@@ -9,7 +9,33 @@ class DocScreen extends StatefulWidget {
 }
 
 class _DocScreenState extends State<DocScreen> {
-  
+  late List<String> _patientUsernames = []; // List to store patient usernames
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPatientUsernames();
+  }
+
+Future<void> _fetchPatientUsernames() async {
+  try {
+    // Fetch patient usernames from Firestore
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('Patients').get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      List<String> usernames = querySnapshot.docs.map((doc) => doc['username'] as String).toList();
+      setState(() {
+        _patientUsernames = usernames;
+      });
+    } else {
+      print('No patients found in Firestore');
+    }
+  } catch (e) {
+    print('Error fetching patients: $e');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +64,6 @@ class _DocScreenState extends State<DocScreen> {
                 ],
               ),
             ),
-            
-         
-            
             SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.only(left: 15),
@@ -57,18 +80,21 @@ class _DocScreenState extends State<DocScreen> {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
               ),
-              itemCount: 8,
+              itemCount: _patientUsernames.length,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
+                String username = _patientUsernames[index];
                 return InkWell(
-                  onTap: () {
+                onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SensorScreen(),
-                        ));
-                  },
+                    context,
+                    MaterialPageRoute(
+                    builder: (context) => SensorScreen(patientUsername: _patientUsernames[index]),
+                                            ),
+                                              );
+                                                  },
+
                   child: Container(
                     margin: EdgeInsets.all(10),
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -90,17 +116,14 @@ class _DocScreenState extends State<DocScreen> {
                           radius: 35,
                           backgroundImage: AssetImage("images/user.jpg"),
                         ),
-                        const Text(
-                          "Patient",
+                        Text(
+                          username,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
                             color: Colors.black54,
                           ),
                         ),
-                        
-                  
-                   
                       ],
                     ),
                   ),

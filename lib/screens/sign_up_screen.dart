@@ -11,6 +11,9 @@ import 'package:healthcare/repository/authenticatio_repository/user_repository/u
 import 'package:get/get.dart';
 import 'package:healthcare/screens/home_screen.dart';
 import 'package:healthcare/widgets/navbar_roots.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -36,33 +39,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
+  String hashPassword(String password) {
+  final bytes = utf8.encode(password); 
+  final digest = sha256.convert(bytes); 
+  return digest.toString(); 
+}
+
   Future<void> createUser(UserModel patient) async {
-    try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email.text,
-        password: password.text,
-      );
-      
+  try {
+    final hashedPassword = hashPassword(patient.password!); 
+    final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: patient.email!,
+      password: hashedPassword,
+    );
 
+    
+    patient = patient.copyWith(password: hashedPassword);
+    await userRepo.createUser(patient);
 
-      await userRepo.createUser(patient);
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NavBarRoots(),
-          ));
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NavBarRoots(),
+      ),
+    );
+  } catch (e) {
+    print(e);
+    
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

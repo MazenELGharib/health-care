@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/screens/doc_home_page.dart';
-
+import 'package:healthcare/screens/doctor_schedule_screen.dart';
 import 'package:healthcare/screens/messages_screen.dart';
-import 'package:healthcare/screens/schedule_screen.dart';
+import 'package:healthcare/screens/doctor_settings_screen.dart';
 import 'package:healthcare/screens/settings_screen.dart';
 
 class NavBar extends StatefulWidget {
@@ -17,8 +17,8 @@ class _NavBarState extends State<NavBar> {
     
     DocScreen(),
     MessagesScreen(),
-    ScheduleScreen(),
-    SettingScreen(),
+    DoctorScheduleScreen(),
+    DoctorSettingsScreen(),
   ];
 
   @override

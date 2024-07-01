@@ -5,7 +5,7 @@ class UserModel {
   final String? phoneNo;
   final String? password;
 
-  const UserModel({
+  UserModel({
     this.id,
     required this.email,
     required this.password,
@@ -13,7 +13,23 @@ class UserModel {
     required this.phoneNo,
   });
 
-  toJson() {
+  UserModel copyWith({
+    String? id,
+    String? username,
+    String? email,
+    String? phoneNo,
+    String? password,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      phoneNo: phoneNo ?? this.phoneNo,
+      password: password ?? this.password,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
     return {
       "username": username,
       "email": email,

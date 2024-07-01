@@ -98,37 +98,33 @@ class _loginScreenState extends State<loginScreen> {
                      password: password.text
                     );
 
-                    // Check if the email belongs to a patient
+                    
     final patientQuery = await FirebaseFirestore.instance.collection('Patients')
       .where('email', isEqualTo: email.text)
       .get();
 
-    // Check if the email belongs to a doctor
+    
     final doctorQuery = await FirebaseFirestore.instance.collection('Doctors')
       .where('email', isEqualTo: email.text)
       .get();
 
     if (patientQuery.docs.isNotEmpty) {
-      // Navigate to the patient page
-     Navigator.push(
+      
+            Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => NavBarRoots(),
                       ));
-    } else if (doctorQuery.docs.isNotEmpty) {
-      // Navigate to the doctor page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => NavBar()),
-      );
-    }
-
-
-                     /*Navigator.push(
+               } else if (doctorQuery.docs.isNotEmpty) {
+      
+            Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => NavBarRoots(),
-                      ));*/
+                      MaterialPageRoute(builder: (context) => NavBar()),
+                );
+             }
+
+
+                   
                      
                   } on FirebaseAuthException catch (e) {
 
